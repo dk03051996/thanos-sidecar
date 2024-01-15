@@ -1,0 +1,32 @@
+prometheus:
+  prometheusSpec:
+    disableCompaction: true
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: standard #you can change storage type depend on cloud
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi #you can change storage configuration
+    thanos:
+      image: quay.io/thanos/thanos:v0.28.1  #image of thanos to run as sidecar
+      objectStorageConfig:
+          name: thanos-objstore-config  #secret that we will create further
+          key: thanos.yaml
+
+  thanosService:
+    enabled: true # this will enable a service for service discovery
+    annotations: {}
+    labels: {}
+    externalTrafficPolicy: Cluster
+    type: ClusterIP
+    portName: grpc
+    port: 10901
+    targetPort: "grpc"
+    httpPortName: http
+    httpPort: 10902
+    targetHttpPort: "http"
+    clusterIP: ""
+    nodePort: 30901
+    httpNodePort: 30902
